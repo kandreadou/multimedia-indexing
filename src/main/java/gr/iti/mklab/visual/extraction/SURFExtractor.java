@@ -1,5 +1,7 @@
 package gr.iti.mklab.visual.extraction;
 
+import boofcv.struct.feature.ScalePoint;
+import georegression.struct.point.Point2D_F64;
 import gr.iti.mklab.visual.utilities.Normalization;
 
 import java.awt.image.BufferedImage;
@@ -25,6 +27,8 @@ public class SURFExtractor extends AbstractFeatureExtractor {
 	 * Sets the value of {@link boofcv.abst.feature.detect.interest.ConfigFastHessian#detectThreshold}
 	 */
 	private int detectThreshold;
+
+    public Point2D_F64[] points;
 
 	/**
 	 * Constructor using default "good" settings for the detector.
@@ -55,7 +59,9 @@ public class SURFExtractor extends AbstractFeatureExtractor {
 		surf.detect(boofcvImage);
 		int numPoints = surf.getNumberOfFeatures();
 		double[][] descriptions = new double[numPoints][SURFLength];
+        points = new Point2D_F64[numPoints];
 		for (int i = 0; i < numPoints; i++) {
+            points[i] = surf.getLocation(i);
 			descriptions[i] = surf.getDescription(i).getValue();
 			if (powerNormalization) {
 				descriptions[i] = Normalization.normalizePower(descriptions[i], 0.5);
@@ -66,4 +72,5 @@ public class SURFExtractor extends AbstractFeatureExtractor {
 		}
 		return descriptions;
 	}
+
 }
