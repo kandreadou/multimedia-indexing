@@ -9,6 +9,7 @@ import gr.iti.mklab.visual.extraction.AbstractFeatureExtractor;
 import gr.iti.mklab.visual.extraction.SURFExtractor;
 import gr.iti.mklab.visual.vectorization.ImageVectorization;
 import gr.iti.mklab.visual.vectorization.ImageVectorizationResult;
+import gr.iti.mklab.visual.vectorization.ImageVectorizationTrain;
 
 /**
  * Created by kandreadou on 3/6/14.
@@ -20,7 +21,7 @@ public class AbstractTest {
     protected static VisualIndexHandler visualIndex;
     protected static MediaItemDAO mediaDao;
 
-    protected static void init() throws Exception {
+    protected static void init(boolean train) throws Exception {
         String learningFolder = "/home/kandreadou/webservice/learning_files/";
 
 
@@ -37,15 +38,26 @@ public class AbstractTest {
         String pcaFile = learningFolder + "pca_surf_4x128_32768to1024.txt";
 
         //Initialize the ImageVectorization
-        ImageVectorization.setFeatureExtractor(new SURFExtractor());
-        ImageVectorization.setVladAggregator(new VladAggregatorMultipleVocabularies(codebookFiles,
-                numCentroids, AbstractFeatureExtractor.SURFLength));
+        if(!train){
+            ImageVectorization.setFeatureExtractor(new SURFExtractor());
+            ImageVectorization.setVladAggregator(new VladAggregatorMultipleVocabularies(codebookFiles,
+                    numCentroids, AbstractFeatureExtractor.SURFLength));
+        }else{
+            ImageVectorizationTrain.setFeatureExtractor(new SURFExtractor());
+            ImageVectorizationTrain.setVladAggregator(new VladAggregatorMultipleVocabularies(codebookFiles,
+                    numCentroids, AbstractFeatureExtractor.SURFLength));
+        }
+
 
         if (targetLengthMax < initialLength) {
             System.out.println("targetLengthMax : "+targetLengthMax+" initialLengh "+initialLength);
             PCA pca = new PCA(targetLengthMax, 1, initialLength, true);
             pca.loadPCAFromFile(pcaFile);
+            if(!train){
             ImageVectorization.setPcaProjector(pca);
+            }else{
+                ImageVectorizationTrain.setPcaProjector(pca);
+            }
         }
 
         String webServiceHost = "http://localhost:8080/VIS";

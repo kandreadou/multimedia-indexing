@@ -147,7 +147,7 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         // next the local features are extracted
         double[][] features = featureExtractor.extractFeatures(image);
 
-        SMO svm = (SMO) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/trainingset/svm1.model");
+        SMO svm = (SMO) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/trainingset/svm3.model");
 
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
         for (int i = 0; i < 64; i++) {

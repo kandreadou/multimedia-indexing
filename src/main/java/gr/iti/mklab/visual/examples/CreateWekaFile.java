@@ -2,6 +2,7 @@ package gr.iti.mklab.visual.examples;
 
 import gr.iti.mklab.visual.vectorization.ImageVectorization;
 import gr.iti.mklab.visual.vectorization.ImageVectorizationResult;
+import gr.iti.mklab.visual.vectorization.ImageVectorizationTrain;
 import ij.gui.Roi;
 import ij.io.RoiDecoder;
 
@@ -18,7 +19,7 @@ public class CreateWekaFile extends AbstractTest {
 
     private static double[] getVector(String imageFolder, String imageFilename, Roi[] rois, BufferedWriter bw) throws Exception {
 
-        ImageVectorization imvec = new ImageVectorization(imageFolder, imageFilename, targetLengthMax, maxNumPixels);
+        ImageVectorizationTrain imvec = new ImageVectorizationTrain(imageFolder, imageFilename, targetLengthMax, maxNumPixels, rois, bw);
 
         ImageVectorizationResult imvr = imvec.call();
         double[] vector = imvr.getImageVector();
@@ -27,10 +28,10 @@ public class CreateWekaFile extends AbstractTest {
     }
 
     public static void main(String[] args) throws Exception {
-        init();
+        init(true);
         String imageFolder = "/home/kandreadou/Desktop/trainingset/";
         String roiFolder = "/home/kandreadou/Desktop/trainingset/rois/";
-        File arffFile = new File("/home/kandreadou/Desktop/trainingset/descriptors.arff");
+        File arffFile = new File("/home/kandreadou/Desktop/trainingset/descriptors2.arff");
         FileWriter fw = new FileWriter(arffFile.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
         bw.write("@relation banners");
@@ -50,13 +51,12 @@ public class CreateWekaFile extends AbstractTest {
             if (file.isFile() && !file.getName().endsWith(".arff")) {
 
                 String imageName = file.getName();
-                System.out.println("Starting for image " + imageName);
+                //System.out.println("Starting for image " + imageName);
                 List<Roi> roiArray = new ArrayList<Roi>();
 
                 for (File roiFile : new File(roiFolder).listFiles()) {
-                    String imageNameWithoutSuffix = imageName.substring(0, imageName.indexOf('.'));
-                    System.out.println(roiFile.getName() + " " + imageNameWithoutSuffix);
-                    if (roiFile.getName().startsWith(imageNameWithoutSuffix)) {
+                    System.out.println(roiFile.getName() + " " + imageName);
+                    if (roiFile.getName().startsWith(imageName)) {
                         //extract rois for image
                         System.out.println("Adding roi " + roiFile.getName());
                         RoiDecoder decoder = new RoiDecoder(roiFile.getPath());
