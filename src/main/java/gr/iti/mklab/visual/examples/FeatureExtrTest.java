@@ -27,70 +27,15 @@ import java.util.List;
  * Created by katerina on 1/21/14.
  * Just a test class
  */
-public class FeatureExtrTest {
-
-    private static int targetLengthMax = 1024;
-    private static int maxNumPixels = 768 * 512;
-    private static VisualIndexHandler visualIndex;
-    private static MediaItemDAO mediaDao;
-
-    private static void init() throws Exception {
-        String learningFolder = "/home/kandreadou/webservice/learning_files/";
+public class FeatureExtrTest extends AbstractTest {
 
 
-        int[] numCentroids = {128, 128, 128, 128};
-        int initialLength = numCentroids.length * numCentroids[0] * AbstractFeatureExtractor.SURFLength;
-
-        String[] codebookFiles = {
-                learningFolder + "surf_l2_128c_0.csv",
-                learningFolder + "surf_l2_128c_1.csv",
-                learningFolder + "surf_l2_128c_2.csv",
-                learningFolder + "surf_l2_128c_3.csv"
-        };
-
-        String pcaFile = learningFolder + "pca_surf_4x128_32768to1024.txt";
-
-        //Initialize the ImageVectorization
-        ImageVectorization.setFeatureExtractor(new SURFExtractor());
-        ImageVectorization.setVladAggregator(new VladAggregatorMultipleVocabularies(codebookFiles,
-                numCentroids, AbstractFeatureExtractor.SURFLength));
-
-        if (targetLengthMax < initialLength) {
-            System.out.println("targetLengthMax : "+targetLengthMax+" initialLengh "+initialLength);
-            PCA pca = new PCA(targetLengthMax, 1, initialLength, true);
-            pca.loadPCAFromFile(pcaFile);
-            ImageVectorization.setPcaProjector(pca);
-        }
-
-        String webServiceHost = "http://localhost:8080/VIS";
-        //String webServiceHost = "http://160.40.51.20:8080/VisualIndexService";
-        String indexCollection =  "test";
-        String mongoHost ="127.0.0.1";
-        visualIndex = new VisualIndexHandler(webServiceHost, indexCollection);
-        mediaDao = new MediaItemDAOImpl(mongoHost);
-    }
-
-    private static double[] getVector(String imageFolder, String imageFilename) throws Exception{
-
-        ImageVectorization imvec = new ImageVectorization(imageFolder, imageFilename, targetLengthMax, maxNumPixels);
-
-        ImageVectorizationResult imvr = imvec.call();
-        double[] vector = imvr.getImageVector();
-
-        return vector;
-    }
-
-    private static double[] getVector(String imageFolder, String imageFilename, Roi[] rois, BufferedWriter bw) throws Exception{
-
-        ImageVectorization imvec = new ImageVectorization(imageFolder, imageFilename, targetLengthMax, maxNumPixels);
-
-        ImageVectorizationResult imvr = imvec.call();
-        double[] vector = imvr.getImageVector();
-
-        return vector;
-    }
-
-   /* public static void main(String[] args) throws Exception {
+    /**
+     * Calculate average time for visual extraction and indexing
+     * @param args
+     * @throws Exception
+     */
+    /*public static void main(String[] args) throws Exception {
         init();
         String imageFolder = "/home/kandreadou/Desktop/samples/";
         File folder = new File(imageFolder);
@@ -120,138 +65,24 @@ public class FeatureExtrTest {
         System.out.println("Average time: "+average/count);
         JsonResultSet result = visualIndex.getSimilarImages(imageId, 0.5);
         System.out.println(result.toJSON());
-
     }*/
 
     public static void main(String[] args) throws Exception {
         init();
-        String imageFolder = "/home/kandreadou/Desktop/trainingset/";
-        String roiFolder = "/home/kandreadou/Desktop/trainingset/rois/";
-        double[] vector1 = getVector(imageFolder, "meme1.jpg");
+        String imageFolder = "/home/kandreadou/Desktop/";
+        double[] vector = getVector(imageFolder, "obama1.png");
+        boolean indexed = visualIndex.index("obama333", vector);
+        System.out.println("indexed first");
+        vector = getVector(imageFolder, "obama2.jpeg");
+        boolean indexed1 = visualIndex.index("obama222", vector);
+        System.out.println("indexed second");
+        JsonResultSet result = visualIndex.getSimilarImages("obama222", 0.9);
+        System.out.println(result.toJSON());
+
         return;
-
-        /*File arffFile = new File("/home/kandreadou/Desktop/trainingset/descriptors.arff");
-        FileWriter fw = new FileWriter(arffFile.getAbsoluteFile());
-        BufferedWriter bw = new BufferedWriter(fw);
-        bw.write("@relation banners");
-        bw.newLine();
-        bw.newLine();
-        for (int i=0; i<64; i++){
-            bw.write("@attribute surf"+i+" real");
-            bw.newLine();
-        }
-        bw.write("@attribute class {'OUT','IN'}");
-        bw.newLine();
-        bw.newLine();
-        bw.write("@data");
-        bw.newLine();
-
-        for (File file :  new File(imageFolder).listFiles()) {
-            if (file.isFile() && !file.getName().endsWith(".arff")) {
-
-                String imageName = file.getName();
-                System.out.println("Starting for image "+imageName);
-                List<Roi> roiArray = new ArrayList<Roi>();
-
-                for (File roiFile: new File(roiFolder).listFiles()){
-                    String imageNameWithoutSuffix = imageName.substring(0, imageName.indexOf('.'));
-                    System.out.println(roiFile.getName()+" "+imageNameWithoutSuffix);
-                    if(roiFile.getName().startsWith(imageNameWithoutSuffix)){
-                        //extract rois for image
-                        System.out.println("Adding roi "+roiFile.getName());
-                        RoiDecoder decoder = new RoiDecoder(roiFile.getPath());
-                        roiArray.add(decoder.getRoi());
-                    }
-                }
-                double[] vector = getVector(imageFolder, file.getName(), roiArray.toArray(new Roi[roiArray.size()]), bw);
-
-            }
-        }
-
-        bw.close();*/
-
     }
 
-    /*public static void main(String[] args) throws Exception {
-        init();
-        String imageFolder = "/home/kandreadou/Desktop/samples/";
-        File arffFile = new File("/home/kandreadou/Desktop/samples/data.arff");
-        FileWriter fw = new FileWriter(arffFile.getAbsoluteFile());
-        BufferedWriter bw = new BufferedWriter(fw);
-        bw.write("@relation banners");
-        bw.newLine();
-        bw.newLine();
-        for (int i=0; i<1024; i++){
-            bw.write("@attribute surf"+i+" real");
-            bw.newLine();
-        }
-        bw.write("@attribute class {'with','without'}");
-        bw.newLine();
-        bw.write("@data");
-        bw.newLine();
-        bw.newLine();
 
-        double[] vector = getVector(imageFolder, "Ukraine_Protests-NOBANNER.jpg");
-        System.out.println("Vector length: "+vector.length);
-        for (double item:vector){
-            bw.write(String.valueOf(item)+',');
-        }
-        bw.write("without");
-        bw.newLine();
-
-        vector = getVector(imageFolder, "image.adapt.960.high_NOBANNER.jpg");
-        System.out.println("Vector length: "+vector.length);
-        for (double item:vector){
-            bw.write(String.valueOf(item)+',');
-        }
-        bw.write("without");
-        bw.newLine();
-
-        vector = getVector(imageFolder, "UKRAINE_PROTESTS_4380633_NOBANNER.jpg");
-        System.out.println("Vector length: "+vector.length);
-        for (double item:vector){
-            bw.write(String.valueOf(item)+',');
-        }
-        bw.write("without");
-        bw.newLine();
-
-        vector = getVector(imageFolder, "royal_baby_WITH.jpg");
-        System.out.println("Vector length: "+vector.length);
-        for (double item:vector){
-            bw.write(String.valueOf(item)+',');
-        }
-        bw.write("without");
-        bw.newLine();
-
-        vector = getVector(imageFolder, "140224105649-got-milk-ad-620xa_WITH.jpg");
-        System.out.println("Vector length: "+vector.length);
-        for (double item:vector){
-            bw.write(String.valueOf(item)+',');
-        }
-        bw.write("without");
-        bw.newLine();
-
-        vector = getVector(imageFolder, "feel_WITH.jpeg");
-        System.out.println("Vector length: "+vector.length);
-        for (double item:vector){
-            bw.write(String.valueOf(item)+',');
-        }
-        bw.write("without");
-        bw.newLine();
-
-        vector = getVector(imageFolder, "funny-pictures_WITH.jpg");
-        System.out.println("Vector length: "+vector.length);
-        for (double item:vector){
-            bw.write(String.valueOf(item)+',');
-        }
-        bw.write("without");
-        bw.newLine();
-
-
-        bw.flush();
-        bw.close();
-
-    }*/
 
     /*public static void main(String[] args) throws Exception {
         init();
