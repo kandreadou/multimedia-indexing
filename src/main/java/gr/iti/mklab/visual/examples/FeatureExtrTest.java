@@ -70,13 +70,15 @@ public class FeatureExtrTest extends AbstractTest {
     public static void main(String[] args) throws Exception {
         init(false);
         String imageFolder = "/home/kandreadou/Desktop/";
-        double[] vector = getVector(imageFolder, "example1.jpg");
-        boolean indexed = visualIndex.index("1test1", vector);
+        double[] vector = getVector(imageFolder, "damerkel.jpg");
+        boolean indexed = visualIndex.index("merk11", vector);
         System.out.println("indexed first");
-        vector = getVector(imageFolder, "meme13.jpg");
-        boolean indexed1 = visualIndex.index("2test2", vector);
+        vector = getVector(imageFolder, "damerkelnew.jpg");
+        boolean indexed1 = visualIndex.index("merk12", vector);
         System.out.println("indexed second");
-        JsonResultSet result = visualIndex.getSimilarImages("2test2", 0.95);
+        JsonResultSet result = visualIndex.getSimilarImages("merk11", 0.99);
+        System.out.println(result.toJSON());
+        result = visualIndex.getSimilarImages("merk12", 0.99);
         System.out.println(result.toJSON());
 
         return;

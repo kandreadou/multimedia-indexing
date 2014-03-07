@@ -8,6 +8,7 @@ import gr.iti.mklab.visual.extraction.SURFExtractor;
 import gr.iti.mklab.visual.utilities.ImageIOGreyScale;
 import ij.gui.Roi;
 import weka.classifiers.functions.SMO;
+import weka.classifiers.meta.CostSensitiveClassifier;
 import weka.core.*;
 
 import java.awt.image.BufferedImage;
@@ -147,7 +148,7 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         // next the local features are extracted
         double[][] features = featureExtractor.extractFeatures(image);
 
-        SMO svm = (SMO) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/trainingset/svm3.model");
+        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/trainingset/cost3.model");
 
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
         for (int i = 0; i < 64; i++) {
@@ -173,6 +174,12 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         for (int i = 0, len = data.numInstances(); i < len; i++) {
             // perform prediction
             Instance inst = data.instance(i);
+            /*double[] distribution = svm.distributionForInstance(inst);
+            if(distribution[0]>0.5 && distribution[1]<0.5){
+                continue;
+            }else{
+                filtered.add(features[i]);
+            }*/
             double myValue = svm.classifyInstance(inst);
             // get the name of class value
             String label = data.classAttribute().value((int)myValue);
