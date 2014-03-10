@@ -1,4 +1,4 @@
-package gr.iti.mklab.visual.examples;
+package gr.iti.mklab.visual.experiments;
 
 import eu.socialsensor.framework.client.dao.MediaItemDAO;
 import eu.socialsensor.framework.client.dao.impl.MediaItemDAOImpl;
@@ -17,7 +17,8 @@ import gr.iti.mklab.visual.vectorization.ImageVectorizationTrain;
 public class AbstractTest {
 
     protected static int targetLengthMax = 1024;
-    protected static int maxNumPixels = 768 * 512;
+    //protected static int maxNumPixels = 768 * 512;
+    protected static int maxNumPixels = 512 * 384;
     protected static VisualIndexHandler visualIndex;
     protected static MediaItemDAO mediaDao;
 

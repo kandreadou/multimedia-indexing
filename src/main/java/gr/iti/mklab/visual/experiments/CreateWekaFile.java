@@ -1,6 +1,6 @@
-package gr.iti.mklab.visual.examples;
+package gr.iti.mklab.visual.experiments;
 
-import gr.iti.mklab.visual.vectorization.ImageVectorization;
+import gr.iti.mklab.visual.experiments.AbstractTest;
 import gr.iti.mklab.visual.vectorization.ImageVectorizationResult;
 import gr.iti.mklab.visual.vectorization.ImageVectorizationTrain;
 import ij.gui.Roi;

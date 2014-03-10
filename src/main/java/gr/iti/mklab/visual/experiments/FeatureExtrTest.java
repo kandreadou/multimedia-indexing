@@ -1,27 +1,7 @@
-package gr.iti.mklab.visual.examples;
+package gr.iti.mklab.visual.experiments;
 
-import eu.socialsensor.framework.client.dao.MediaItemDAO;
-import eu.socialsensor.framework.client.dao.impl.MediaItemDAOImpl;
 import eu.socialsensor.framework.client.search.visual.JsonResultSet;
-import eu.socialsensor.framework.client.search.visual.VisualIndexHandler;
-import eu.socialsensor.framework.common.domain.MediaItem;
-import gr.iti.mklab.visual.aggregation.VladAggregatorMultipleVocabularies;
-import gr.iti.mklab.visual.dimreduction.PCA;
-import gr.iti.mklab.visual.extraction.AbstractFeatureExtractor;
-import gr.iti.mklab.visual.extraction.SURFExtractor;
-import gr.iti.mklab.visual.vectorization.ImageVectorization;
-import gr.iti.mklab.visual.vectorization.ImageVectorizationResult;
-import ij.gui.Roi;
-import ij.io.RoiDecoder;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import gr.iti.mklab.visual.experiments.AbstractTest;
 
 /**
  * Created by katerina on 1/21/14.
