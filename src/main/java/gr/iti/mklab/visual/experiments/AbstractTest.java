@@ -3,6 +3,7 @@ package gr.iti.mklab.visual.experiments;
 import eu.socialsensor.framework.client.dao.MediaItemDAO;
 import eu.socialsensor.framework.client.dao.impl.MediaItemDAOImpl;
 import eu.socialsensor.framework.client.search.visual.VisualIndexHandler;
+import gr.iti.mklab.visual.aggregation.AbstractFeatureAggregator;
 import gr.iti.mklab.visual.aggregation.VladAggregatorMultipleVocabularies;
 import gr.iti.mklab.visual.dimreduction.PCA;
 import gr.iti.mklab.visual.extraction.AbstractFeatureExtractor;
@@ -16,8 +17,8 @@ import gr.iti.mklab.visual.vectorization.ImageVectorizationTrain;
  */
 public class AbstractTest {
 
-    protected static int targetLengthMax = 1024;
     //protected static int maxNumPixels = 768 * 512;
+    protected static int targetLengthMax = 1024;
     protected static int maxNumPixels = 512 * 384;
     protected static VisualIndexHandler visualIndex;
     protected static MediaItemDAO mediaDao;
@@ -39,12 +40,16 @@ public class AbstractTest {
         String pcaFile = learningFolder + "pca_surf_4x128_32768to1024.txt";
 
         //Initialize the ImageVectorization
+        SURFExtractor extractor = new SURFExtractor();
+        extractor.setL2Normalization(true);
+        extractor.setPowerNormalization(true);
+
         if(!train){
-            ImageVectorization.setFeatureExtractor(new SURFExtractor());
+            ImageVectorization.setFeatureExtractor(extractor);
             ImageVectorization.setVladAggregator(new VladAggregatorMultipleVocabularies(codebookFiles,
                     numCentroids, AbstractFeatureExtractor.SURFLength));
         }else{
-            ImageVectorizationTrain.setFeatureExtractor(new SURFExtractor());
+            ImageVectorizationTrain.setFeatureExtractor(extractor);
             ImageVectorizationTrain.setVladAggregator(new VladAggregatorMultipleVocabularies(codebookFiles,
                     numCentroids, AbstractFeatureExtractor.SURFLength));
         }
@@ -63,7 +68,7 @@ public class AbstractTest {
 
         String webServiceHost = "http://localhost:8080/VIS";
         //String webServiceHost = "http://160.40.51.20:8080/VisualIndexService";
-        String indexCollection =  "test";
+        String indexCollection =  "classifier";
         String mongoHost ="127.0.0.1";
         visualIndex = new VisualIndexHandler(webServiceHost, indexCollection);
         mediaDao = new MediaItemDAOImpl(mongoHost);

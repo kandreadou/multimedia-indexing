@@ -11,6 +11,7 @@ import java.io.FileWriter;
  */
 public class mAPevaluation extends AbstractTest {
 
+
     public static void main(String[] args) throws Exception {
         init(false);
         String imageFolder = "/home/kandreadou/Downloads/evaluation/jpg/";
@@ -39,11 +40,12 @@ public class mAPevaluation extends AbstractTest {
         for (File file : folder.listFiles()) {
             String imageFilename = file.getName();
             if (imageFilename.endsWith("00.jpg")) {
-                System.out.println("searching for "+imageFilename);
+                System.out.println("searching for " + imageFilename);
                 JsonResultSet results = visualIndex.getSimilarImages(imageFilename, 0.99);
-                bw.write(imageFilename+" 0 ");
-                for(JsonResultSet.JsonResult result:results.getResults()){
-                   bw.write(result.getId()+" "+result.getRank()+" ");
+                bw.write(imageFilename + " 0 ");
+                for (JsonResultSet.JsonResult result : results.getResults()) {
+                    bw.write(result.getId() + " " + result.getRank() + " ");
+
                 }
                 bw.newLine();
             }

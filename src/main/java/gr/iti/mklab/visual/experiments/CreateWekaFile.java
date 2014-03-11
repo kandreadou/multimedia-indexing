@@ -31,7 +31,7 @@ public class CreateWekaFile extends AbstractTest {
         init(true);
         String imageFolder = "/home/kandreadou/Desktop/trainingset/";
         String roiFolder = "/home/kandreadou/Desktop/trainingset/rois/";
-        File arffFile = new File("/home/kandreadou/Desktop/trainingset/descriptors3.arff");
+        File arffFile = new File("/home/kandreadou/Desktop/trainingset/descriptors4.arff");
         FileWriter fw = new FileWriter(arffFile.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
         bw.write("@relation banners");

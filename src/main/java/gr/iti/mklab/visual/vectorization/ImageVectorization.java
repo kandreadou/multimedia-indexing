@@ -148,7 +148,8 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         // next the local features are extracted
         double[][] features = featureExtractor.extractFeatures(image);
 
-        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/trainingset/cost3.model");
+        //////////////////////// AREA CLASSIFIER ////////////////////////////
+        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/trainingset/stuff/cost4.model");
 
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
         for (int i = 0; i < 64; i++) {
