@@ -149,7 +149,7 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         double[][] features = featureExtractor.extractFeatures(image);
 
         //////////////////////// AREA CLASSIFIER ////////////////////////////
-        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/trainingset/stuff/cost4.model");
+        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/trainingset/stuff/cost75trees4cost5foldsNEW.model");
 
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
         for (int i = 0; i < 64; i++) {
