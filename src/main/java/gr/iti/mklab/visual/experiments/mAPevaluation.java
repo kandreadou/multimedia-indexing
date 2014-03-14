@@ -16,7 +16,8 @@ public class mAPevaluation extends AbstractTest {
 
     public static void main(String[] args) throws Exception {
         init(false);
-        String imageFolder = "/home/kandreadou/Desktop/meme_test_set/";
+        String imageFolder = "/home/kandreadou/Downloads/oxbuildings/oxbuild_images/";
+        //String imageFolder = "/home/kandreadou/Desktop/meme_test_set/";
         //String imageFolder = "/home/kandreadou/Downloads/evaluation/jpg/";
         File arffFile = new File("/home/kandreadou/Desktop/holidays_data.dat");
         FileWriter fw = new FileWriter(arffFile.getAbsoluteFile());
@@ -40,7 +41,7 @@ public class mAPevaluation extends AbstractTest {
 
         System.out.println("Average time: " + average / count);
 
-        for (File file : folder.listFiles()) {
+        /*for (File file : folder.listFiles()) {
             String imageFilename = file.getName();
             if (imageFilename.endsWith("00.jpg")) {
                 System.out.println("searching for " + imageFilename);
@@ -53,7 +54,7 @@ public class mAPevaluation extends AbstractTest {
                 }
                 bw.newLine();
             }
-        }
+        }*/
 
         bw.flush();
         bw.close();
