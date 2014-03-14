@@ -1,6 +1,8 @@
 package gr.iti.mklab.visual.experiments;
 
 import eu.socialsensor.framework.client.search.visual.JsonResultSet;
+import gr.iti.mklab.visual.utilities.Answer;
+import gr.iti.mklab.visual.utilities.Result;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,7 +16,8 @@ public class mAPevaluation extends AbstractTest {
 
     public static void main(String[] args) throws Exception {
         init(false);
-        String imageFolder = "/home/kandreadou/Downloads/evaluation/jpg/";
+        String imageFolder = "/home/kandreadou/Desktop/meme_test_set/";
+        //String imageFolder = "/home/kandreadou/Downloads/evaluation/jpg/";
         File arffFile = new File("/home/kandreadou/Desktop/holidays_data.dat");
         FileWriter fw = new FileWriter(arffFile.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
@@ -27,7 +30,7 @@ public class mAPevaluation extends AbstractTest {
                 String imageFilename = file.getName();
                 long start = System.currentTimeMillis();
                 double[] vector = getVector(imageFolder, imageFilename);
-                boolean indexed = visualIndex.index(imageFilename, vector);
+                boolean indexed = index.indexVector(imageFilename, vector);
                 long time = System.currentTimeMillis() - start;
                 System.out.println("indexed " + indexed + " in " + time + " milliseconds");
                 average += time;
@@ -41,11 +44,12 @@ public class mAPevaluation extends AbstractTest {
             String imageFilename = file.getName();
             if (imageFilename.endsWith("00.jpg")) {
                 System.out.println("searching for " + imageFilename);
-                JsonResultSet results = visualIndex.getSimilarImages(imageFilename, 0.99);
-                bw.write(imageFilename + " 0 ");
-                for (JsonResultSet.JsonResult result : results.getResults()) {
-                    bw.write(result.getId() + " " + result.getRank() + " ");
-
+                Answer r = index.computeNearestNeighbors(10, imageFilename);
+                bw.write(imageFilename);
+                int rank = 0;
+                for (Result result : r.getResults()) {
+                    bw.write(" " + rank + " " + result.getId());
+                    rank++;
                 }
                 bw.newLine();
             }

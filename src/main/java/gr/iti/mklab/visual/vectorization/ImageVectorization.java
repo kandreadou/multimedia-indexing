@@ -149,7 +149,7 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         double[][] features = featureExtractor.extractFeatures(image);
 
         //////////////////////// AREA CLASSIFIER ////////////////////////////
-        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/trainingset/stuff/cost75trees4cost5foldsNEW.model");
+        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/classifier_training/stuff/cost64trees3cost5foldsBEST.model");
 
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
         for (int i = 0; i < 64; i++) {
@@ -197,7 +197,7 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         System.out.println("initial length "+features.length+" final length "+featuresFiltered.length);
 
         // next the features are aggregated
-        double[] vladVector = vladAggregator.aggregate(featuresFiltered);
+        double[] vladVector = vladAggregator.aggregate(features);
 
         if (vladVector.length == vectorLength) {
             // no projection is needed
