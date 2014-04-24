@@ -76,7 +76,7 @@ public class AbstractTest {
         visualIndex = new VisualIndexHandler(webServiceHost, indexCollection);
         mediaDao = new MediaItemDAOImpl(mongoHost);
 
-        String BDBEnvHome = learningFolder + "BDB_" + targetLengthMax;
+        String BDBEnvHome = learningFolder + "mAP_" + targetLengthMax;
         index = new Linear(targetLengthMax, 10000, false, BDBEnvHome, true,
                 true, 0);
     }

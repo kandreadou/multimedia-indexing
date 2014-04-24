@@ -9,7 +9,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="socialsensor-framework-client" level="project" />
     <orderEntry type="library" name="ij" level="project" />
     <orderEntry type="library" name="nz.ac.waikato.cms.weka:weka-dev:3.7.10" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
@@ -17,7 +16,7 @@
     <orderEntry type="library" name="Maven: org.georegression:georegression:0.3" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.efficient-java-matrix-library:ejml:0.21" level="project" />
     <orderEntry type="library" name="Maven: org.ddogleg:ddogleg:0.3" level="project" />
-    <orderEntry type="library" name="Maven: com.sleepycat:je:5.0.58" level="project" />
+    <orderEntry type="library" name="Maven: com.sleepycat:je:5.0.73" level="project" />
     <orderEntry type="library" name="Maven: com.javadocmd:simplelatlng:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.boofcv:boofcv:0.15" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.xstream:xstream:1.4.4" level="project" />
@@ -28,6 +27,8 @@
     <orderEntry type="library" name="Maven: org.pentaho.pentaho-commons:pentaho-package-manager:1.0.8" level="project" />
     <orderEntry type="library" name="Maven: com.aliasi:lingpipe:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.rabbitmq:amqp-client:3.2.4" level="project" />
+    <orderEntry type="library" name="Maven: gov.nih.imagej:imagej:1.47" level="project" />
+    <orderEntry type="library" name="Maven: foo.bar:SocialSensorClient:5.6.7" level="project" />
   </component>
 </module>
 

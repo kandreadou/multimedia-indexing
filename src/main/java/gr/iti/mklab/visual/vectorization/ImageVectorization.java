@@ -149,7 +149,7 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         double[][] features = featureExtractor.extractFeatures(image);
 
         //////////////////////// AREA CLASSIFIER ////////////////////////////
-        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/classifier_training/stuff/cost64trees3cost5foldsBEST.model");
+        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/classifier_training/models/correctRF32trees30cost5folds.model");
 
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
         for (int i = 0; i < 64; i++) {
@@ -175,18 +175,18 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         for (int i = 0, len = data.numInstances(); i < len; i++) {
             // perform prediction
             Instance inst = data.instance(i);
-            /*double[] distribution = svm.distributionForInstance(inst);
-            if(distribution[0]>0.5 && distribution[1]<0.5){
+            double[] distribution = svm.distributionForInstance(inst);
+           if(distribution[0]>0.7 && distribution[1]<0.3){
                 continue;
             }else{
                 filtered.add(features[i]);
-            }*/
-            double myValue = svm.classifyInstance(inst);
-            // get the name of class value
-            String label = data.classAttribute().value((int)myValue);
-            if("IN".equals(label)){
-                filtered.add(features[i]);
             }
+            //double myValue = svm.classifyInstance(inst);
+            // get the name of class value
+            //String label = data.classAttribute().value((int)myValue);
+            //if("IN".equals(label)){
+             //   filtered.add(features[i]);
+            //}
             //int realvalue = (int) inst.classValue();
             //System.out.println("Prediction for instance " + i + " value: " + myValue + " prediction " + label);
 
@@ -194,7 +194,7 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
 
         filtered.trimToSize();
         double[][] featuresFiltered = filtered.toArray(new double[filtered.size()][64]);
-        System.out.println("initial length "+features.length+" final length "+featuresFiltered.length);
+        //System.out.println("initial length "+features.length+" final length "+featuresFiltered.length);
 
         // next the features are aggregated
         double[] vladVector = vladAggregator.aggregate(features);

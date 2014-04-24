@@ -15,7 +15,8 @@ public class OxfordMapEvaluation extends AbstractTest {
 
         init(false);
 
-        String queryFolder = "/home/kandreadou/Downloads/oxbuildings/gt_files_170407/";
+        //String queryFolder = "/home/kandreadou/datasets/oxbuildings/gt_files_170407/";
+        String queryFolder = "/home/kandreadou/datasets/parisbuildings/paris_120310/";
         //String resultsFolder = "/home/kandreadou/Downloads/oxbuildings/results/";
         File folder = new File(queryFolder);
 
@@ -29,7 +30,10 @@ public class OxfordMapEvaluation extends AbstractTest {
                 FileReader fr = new FileReader(new File(queryFolder+fileName).getAbsoluteFile());
                 BufferedReader br = new BufferedReader(fr);
                 String line = br.readLine();
-                String imageName = line.split("\\s+")[0].substring(5)+".jpg";
+                //for parirs
+                String imageName = line.split("\\s+")[0]+".jpg";
+                // for oxrford
+                //String imageName = line.split("\\s+")[0].substring(5)+".jpg";
                 br.close();
                 fr.close();
                 System.out.println("imageName "+imageName);
@@ -38,15 +42,12 @@ public class OxfordMapEvaluation extends AbstractTest {
                 String resultFilePath = queryFolder+resultFileName+"_result.txt";
                 FileWriter fw = new FileWriter(new File(resultFilePath).getAbsoluteFile());
                 BufferedWriter bw = new BufferedWriter(fw);
-                Answer r = index.computeNearestNeighbors(9, imageName);
-                bw.write(extractImageName(imageName));
-                bw.newLine();
-                //int rank = 0;
+                Answer r = index.computeNearestNeighbors(5000, imageName);
+                //w.write(extractImageName(imageName));
+                //bw.newLine();
                 for (Result result : r.getResults()) {
                     bw.write(extractImageName(result.getId()));
                     bw.newLine();
-                    //bw.write(" " + rank + " " + result.getId());
-                    //rank++;
                 }
                 bw.newLine();
                 bw.close();

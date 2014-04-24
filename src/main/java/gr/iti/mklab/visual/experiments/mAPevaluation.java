@@ -13,35 +13,27 @@ import java.io.FileWriter;
  */
 public class mAPevaluation extends AbstractTest {
 
+    private static int count = 0;
+    private static long average = 0;
+
+    //String imageFolder = "/home/kandreadou/datasets/oxbuildings/oxbuild_images/";
+    //private final static String imageFolder = "/home/kandreadou/datasets/mixed/jpg/";
+    private final static String imageFolder = "/home/kandreadou/datasets/holidays/jpg/";
+    //private final static String imageFolder = "/home/kandreadou/datasets/parisbuildings/paris/";
 
     public static void main(String[] args) throws Exception {
         init(false);
-        String imageFolder = "/home/kandreadou/Downloads/oxbuildings/oxbuild_images/";
-        //String imageFolder = "/home/kandreadou/Desktop/meme_test_set/";
-        //String imageFolder = "/home/kandreadou/Downloads/evaluation/jpg/";
-        File arffFile = new File("/home/kandreadou/Desktop/holidays_data.dat");
+
+        File arffFile = new File("/home/kandreadou/datasets/holidays/holidays_data.dat");
         FileWriter fw = new FileWriter(arffFile.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
         File folder = new File(imageFolder);
-        int count = 0;
-        long average = 0;
 
-        for (File file : folder.listFiles()) {
-            if (file.isFile()) {
-                String imageFilename = file.getName();
-                long start = System.currentTimeMillis();
-                double[] vector = getVector(imageFolder, imageFilename);
-                boolean indexed = index.indexVector(imageFilename, vector);
-                long time = System.currentTimeMillis() - start;
-                System.out.println("indexed " + indexed + " in " + time + " milliseconds");
-                average += time;
-                count++;
-            }
-        }
+        indexFilesInFolder(folder);
 
         System.out.println("Average time: " + average / count);
 
-        /*for (File file : folder.listFiles()) {
+        for (File file : folder.listFiles()) {
             String imageFilename = file.getName();
             if (imageFilename.endsWith("00.jpg")) {
                 System.out.println("searching for " + imageFilename);
@@ -54,10 +46,32 @@ public class mAPevaluation extends AbstractTest {
                 }
                 bw.newLine();
             }
-        }*/
+        }
 
         bw.flush();
         bw.close();
 
+    }
+
+    protected static void indexFilesInFolder(File folder) {
+        for (File file : folder.listFiles()) {
+            if (file.isFile()) {
+                String imageFilename = file.getName();
+                long start = System.currentTimeMillis();
+                try {
+                    double[] vector = getVector(folder.getPath() + '/', imageFilename);
+                    boolean indexed = index.indexVector(imageFilename, vector);
+                    long time = System.currentTimeMillis() - start;
+                    average += time;
+                    count++;
+                    System.out.println("indexed " + indexed + " in " + time + " milliseconds");
+                } catch (Exception ex) {
+                    System.out.println("#### Error when doing ->Folder path " + folder.getPath() + " imageFilename " + imageFilename);
+                }
+
+            } else {
+                indexFilesInFolder(file);
+            }
+        }
     }
 }

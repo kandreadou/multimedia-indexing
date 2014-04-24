@@ -6,6 +6,7 @@ import gr.iti.mklab.visual.utilities.Result;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,12 +16,11 @@ import java.util.List;
  */
 public class CreateMapFilesFromFolder {
 
-    public static void main(String[] args) throws Exception {
-
+    private static void oldFashioned() throws IOException {
         List<String> listOfNames = new ArrayList<String>();
-        String imageFolder = "/home/kandreadou/Desktop/meme_test_set/";
-        File images = new File("/home/kandreadou/Desktop/meme_test_set/eval_holidays/holidays_images.dat");
-        File perfectResult = new File("/home/kandreadou/Desktop/meme_test_set/eval_holidays/perfect_result.dat");
+        String imageFolder = "/home/kandreadou/datasets/mixed/jpg/";
+        File images = new File("/home/kandreadou/datasets/mixed/eval_holidays/holidays_images.dat");
+        File perfectResult = new File("/home/kandreadou/datasets/mixed/eval_holidays/perfect_result.dat");
         FileWriter fw = new FileWriter(images.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
         File folder = new File(imageFolder);
@@ -60,6 +60,10 @@ public class CreateMapFilesFromFolder {
 
         bw.flush();
         bw.close();
+    }
 
+
+    public static void main(String[] args) throws Exception {
+        oldFashioned();
     }
 }

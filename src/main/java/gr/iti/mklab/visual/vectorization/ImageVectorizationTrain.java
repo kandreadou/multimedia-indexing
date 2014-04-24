@@ -3,6 +3,7 @@ package gr.iti.mklab.visual.vectorization;
 import georegression.struct.point.Point2D_F64;
 import gr.iti.mklab.visual.aggregation.VladAggregatorMultipleVocabularies;
 import gr.iti.mklab.visual.dimreduction.PCA;
+import gr.iti.mklab.visual.experiments.CreateWekaFile;
 import gr.iti.mklab.visual.extraction.AbstractFeatureExtractor;
 import gr.iti.mklab.visual.extraction.ImageScaling;
 import gr.iti.mklab.visual.extraction.SURFExtractor;
@@ -15,9 +16,12 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
@@ -90,7 +94,7 @@ public class ImageVectorizationTrain implements Callable<ImageVectorizationResul
      *                             to vectorization.
      */
     public ImageVectorizationTrain(String imageFolder, String imageFilename, int vectorLength,
-                              int maxImageSizeInPixels) {
+                                   int maxImageSizeInPixels) {
         this.imageFolder = imageFolder;
         this.imageFilename = imageFilename;
         this.vectorLength = vectorLength;
@@ -98,7 +102,7 @@ public class ImageVectorizationTrain implements Callable<ImageVectorizationResul
     }
 
     public ImageVectorizationTrain(String imageFolder, String imageFilename, int vectorLength,
-                              int maxImageSizeInPixels, Roi[] recs, BufferedWriter bw) {
+                                   int maxImageSizeInPixels, Roi[] recs, BufferedWriter bw) {
         this(imageFolder, imageFilename, vectorLength, maxImageSizeInPixels);
         this.rois = recs;
         this.bw = bw;
@@ -114,7 +118,7 @@ public class ImageVectorizationTrain implements Callable<ImageVectorizationResul
      *                             to vectorization.
      */
     public ImageVectorizationTrain(String imageFilename, BufferedImage image, int vectorLength,
-                              int maxImageSizeInPixels) {
+                                   int maxImageSizeInPixels) {
         this.imageFilename = imageFilename;
         this.vectorLength = vectorLength;
         this.image = image;
@@ -133,6 +137,22 @@ public class ImageVectorizationTrain implements Callable<ImageVectorizationResul
         if (debug)
             System.out.println("Vectorization for image " + imageFilename + " completed.");
         return new ImageVectorizationResult(imageFilename, imageVector);
+    }
+
+    public void paintCircleOnPoint(BufferedImage bi, int x, int y) {
+
+        Graphics2D g2 = bi.createGraphics();
+
+        // draw a circle with the same center
+        double centerX = x;
+        double centerY = y;
+        double radius = 5;
+
+        Ellipse2D circle = new Ellipse2D.Double();
+        circle.setFrameFromCenter(centerX, centerY, centerX + radius, centerY + radius);
+        g2.setPaint(Color.RED);
+        g2.fill(circle);
+        g2.draw(circle);
     }
 
 
@@ -158,22 +178,7 @@ public class ImageVectorizationTrain implements Callable<ImageVectorizationResul
             }
         }
 
-        int originalWidth = image.getWidth();
-        int originalHeight = image.getHeight();
-        long originalSize = originalWidth * originalHeight;
-
-        // next the image is scaled
-        ImageScaling scale = new ImageScaling(maxImageSizeInPixels);
-        image = scale.maxPixelsScaling(image);
-
-        int targetWidth = image.getWidth();
-        int targetHeight = image.getHeight();
-        long targetSize = targetWidth * targetHeight;
-
-        double scalingRatio = (double) targetSize / originalSize;
-        // scaling ratio per dimension
-        scalingRatio = Math.sqrt(scalingRatio);
-        System.out.println("scaling ratio : " + scalingRatio);
+        //Don't scale when training!!
 
         // next the local features are extracted
         double[][] features = featureExtractor.extractFeatures(image);
@@ -181,8 +186,8 @@ public class ImageVectorizationTrain implements Callable<ImageVectorizationResul
         Point2D_F64[] points = ((SURFExtractor) featureExtractor).points;
 
         for (int i = 0, len = points.length; i < len; i++) {
-            int x = (int) (points[i].x / scalingRatio);
-            int y = (int) (points[i].y / scalingRatio);
+            int x = (int) points[i].x;
+            int y = (int) points[i].y;
             for (int k = 0; k < features[i].length; k++) {
                 bw.write(features[i][k] + ",");
             }
@@ -193,13 +198,24 @@ public class ImageVectorizationTrain implements Callable<ImageVectorizationResul
                     if (roi.contains(x, y)) {
                         bw.write("OUT");
                         foundRoi = true;
+                        paintCircleOnPoint(image, x,y);
+                        CreateWekaFile.NUM_FONT_DESCRIPTORS++;
                         break;
                     }
                 }
             }
-            if (!foundRoi)
+            if (!foundRoi) {
                 bw.write("IN");
+                CreateWekaFile.NUM_CONTENT_DESCRIPTORS++;
+            }
             bw.newLine();
+        }
+
+        try {
+            String folder = "/home/kandreadou/Desktop/imagesWithDesc/";
+            ImageIO.write(image, "JPEG", new File(folder, imageFilename));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         // next the features are aggregated
