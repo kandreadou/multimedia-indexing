@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class mAPevaluationNew extends AbstractTest {
 
-    private final static String imageFolder = "/home/kandreadou/datasets/holidays_queries_with_fonts/dataset/";
+    private final static String imageFolder = "/home/kandreadou/datasets/holidays_queries_with_fonts/mirflickr20k/";
     private static List<String> allImagesInDataset = new ArrayList<String>();
 
     private final static String queryFolder = "/home/kandreadou/datasets/holidays_queries_with_fonts/queries/";
@@ -116,7 +116,7 @@ public class mAPevaluationNew extends AbstractTest {
             }
 
             double averagePrecision = calculateAP(actual.toArray(new String[actual.size()]), truth.toArray(new String[truth.size()]));
-
+            System.out.println("AP "+averagePrecision+ "form image filename "+imageFilename);
 
             /*double apSum = 0;
             double cnt = 0;

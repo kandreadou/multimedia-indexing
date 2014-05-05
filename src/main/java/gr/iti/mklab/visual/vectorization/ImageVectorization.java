@@ -133,12 +133,14 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         // first the image is read if the image field is null
         if (image == null) {
             try { // first try reading with the default class
+                //System.out.println("Image folder "+imageFolder+" image Filename "+imageFilename);
                 image = ImageIO.read(new File(imageFolder + imageFilename));
             } catch (IllegalArgumentException e) {
                 // this exception is probably thrown because of a greyscale jpeg image
                 System.out.println("Exception: " + e.getMessage() + " | Image: " + imageFilename);
+                return new double[0];
                 // retry with the modified class
-                image = ImageIOGreyScale.read(new File(imageFolder + imageFilename));
+                //image = ImageIOGreyScale.read(new File(imageFolder + imageFilename));
             }
         }
         // next the image is scaled

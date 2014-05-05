@@ -29,6 +29,8 @@
     <orderEntry type="library" name="Maven: com.rabbitmq:amqp-client:3.2.4" level="project" />
     <orderEntry type="library" name="Maven: gov.nih.imagej:imagej:1.47" level="project" />
     <orderEntry type="library" name="Maven: foo.bar:SocialSensorClient:5.6.7" level="project" />
+    <orderEntry type="library" name="lire" level="project" />
+    <orderEntry type="library" name="smal" level="project" />
   </component>
 </module>
 

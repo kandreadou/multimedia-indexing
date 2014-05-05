@@ -10,6 +10,7 @@ import gr.iti.mklab.visual.datastructures.Linear;
 import gr.iti.mklab.visual.dimreduction.PCA;
 import gr.iti.mklab.visual.extraction.AbstractFeatureExtractor;
 import gr.iti.mklab.visual.extraction.SURFExtractor;
+import gr.iti.mklab.visual.vectorization.GaborVectorization;
 import gr.iti.mklab.visual.vectorization.ImageVectorization;
 import gr.iti.mklab.visual.vectorization.ImageVectorizationResult;
 import gr.iti.mklab.visual.vectorization.ImageVectorizationTrain;
@@ -76,8 +77,8 @@ public class AbstractTest {
         visualIndex = new VisualIndexHandler(webServiceHost, indexCollection);
         mediaDao = new MediaItemDAOImpl(mongoHost);
 
-        String BDBEnvHome = learningFolder + "mAP_" + targetLengthMax;
-        index = new Linear(targetLengthMax, 10000, false, BDBEnvHome, true,
+        String BDBEnvHome = learningFolder + "mirFlickr20K_" + targetLengthMax;
+        index = new Linear(targetLengthMax, 50000, false, BDBEnvHome, true,
                 true, 0);
     }
 
