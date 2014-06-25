@@ -10,10 +10,7 @@ import gr.iti.mklab.visual.datastructures.Linear;
 import gr.iti.mklab.visual.dimreduction.PCA;
 import gr.iti.mklab.visual.extraction.AbstractFeatureExtractor;
 import gr.iti.mklab.visual.extraction.SURFExtractor;
-import gr.iti.mklab.visual.vectorization.GaborVectorization;
-import gr.iti.mklab.visual.vectorization.ImageVectorization;
-import gr.iti.mklab.visual.vectorization.ImageVectorizationResult;
-import gr.iti.mklab.visual.vectorization.ImageVectorizationTrain;
+import gr.iti.mklab.visual.vectorization.*;
 
 /**
  * Created by kandreadou on 3/6/14.
@@ -53,9 +50,10 @@ public class AbstractTest {
             ImageVectorization.setVladAggregator(new VladAggregatorMultipleVocabularies(codebookFiles,
                     numCentroids, AbstractFeatureExtractor.SURFLength));
         }else{
-            ImageVectorizationTrain.setFeatureExtractor(extractor);
-            ImageVectorizationTrain.setVladAggregator(new VladAggregatorMultipleVocabularies(codebookFiles,
+            ImVecNew.setFeatureExtractor(extractor);
+            ImVecNew.setVladAggregator(new VladAggregatorMultipleVocabularies(codebookFiles,
                     numCentroids, AbstractFeatureExtractor.SURFLength));
+            ImVecNew.loadClassifier();
         }
 
 
@@ -66,7 +64,7 @@ public class AbstractTest {
             if(!train){
             ImageVectorization.setPcaProjector(pca);
             }else{
-                ImageVectorizationTrain.setPcaProjector(pca);
+                ImVecNew.setPcaProjector(pca);
             }
         }
 
@@ -77,14 +75,14 @@ public class AbstractTest {
         visualIndex = new VisualIndexHandler(webServiceHost, indexCollection);
         mediaDao = new MediaItemDAOImpl(mongoHost);
 
-        String BDBEnvHome = learningFolder + "mirFlickr20K_" + targetLengthMax;
-        index = new Linear(targetLengthMax, 50000, false, BDBEnvHome, true,
+        String BDBEnvHome = learningFolder + "newTests_" + targetLengthMax;
+        index = new Linear(targetLengthMax, 6000, false, BDBEnvHome, true,
                 true, 0);
     }
 
     protected static double[] getVector(String imageFolder, String imageFilename) throws Exception{
 
-        ImageVectorization imvec = new ImageVectorization(imageFolder, imageFilename, targetLengthMax, maxNumPixels);
+        ImVecNew imvec = new ImVecNew(imageFolder, imageFilename, targetLengthMax, maxNumPixels);
 
         ImageVectorizationResult imvr = imvec.call();
         double[] vector = imvr.getImageVector();

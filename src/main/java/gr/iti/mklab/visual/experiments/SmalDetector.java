@@ -376,14 +376,18 @@ public class SmalDetector {
         }
     }
 
-    protected static double[] getVector(String imageFolder, String imageFilename) throws Exception {
+    protected static double[] getVector(String imageFolder, String imageFilename) {
 
-        ImageVectorization imvec = new ImageVectorization(imageFolder, imageFilename, targetLengthMax, maxNumPixels);
+        try {
+            ImageVectorization imvec = new ImageVectorization(imageFolder, imageFilename, targetLengthMax, maxNumPixels);
 
-        ImageVectorizationResult imvr = imvec.call();
-        double[] vector = imvr.getImageVector();
+            ImageVectorizationResult imvr = imvec.call();
+            double[] vector = imvr.getImageVector();
 
-        return vector;
+            return vector;
+        } catch (Exception ex) {
+            return new double[1024];
+        }
     }
 
 }

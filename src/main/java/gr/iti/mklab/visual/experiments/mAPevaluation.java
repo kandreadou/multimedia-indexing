@@ -3,6 +3,9 @@ package gr.iti.mklab.visual.experiments;
 import eu.socialsensor.framework.client.search.visual.JsonResultSet;
 import gr.iti.mklab.visual.utilities.Answer;
 import gr.iti.mklab.visual.utilities.Result;
+import gr.iti.mklab.visual.vectorization.ImageVectorization;
+import gr.iti.mklab.visual.vectorization.ImageVectorizationResult;
+import gr.iti.mklab.visual.vectorization.ImageVectorizationTrain;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,6 +25,30 @@ public class mAPevaluation extends AbstractTest {
     //private final static String imageFolder = "/home/kandreadou/datasets/parisbuildings/paris/";
 
     public static void main(String[] args) throws Exception {
+        init(true);
+        String theFolder = "/home/kandreadou/Pictures/test/";
+        File folder = new File(theFolder);
+        for (File file : folder.listFiles()) {
+
+            String imageFilename = file.getName();
+
+            try {
+
+                double[] vector = getVector(theFolder, imageFilename);
+                //index.indexVector(imageFilename, vector);
+
+            } catch (Exception ex) {
+                System.out.println("#### Error when doing ->Folder path " + folder.getPath() + " imageFilename " + imageFilename);
+                System.out.println(ex.getMessage()+" "+ex);
+            }
+        }
+        //Answer anser = index.computeNearestNeighbors(100, "FINLAND-MEME-ELITE.jpg");
+       // for (Result r: anser.getResults()){
+       //     System.out.println(r.getId()+" "+r.getDistance());
+       // }
+    }
+
+    /*public static void main(String[] args) throws Exception {
         init(false);
 
         File arffFile = new File("/home/kandreadou/datasets/holidays/holidays_data.dat");
@@ -51,7 +78,7 @@ public class mAPevaluation extends AbstractTest {
         bw.flush();
         bw.close();
 
-    }
+    }*/
 
     protected static void indexFilesInFolder(File folder) {
         for (File file : folder.listFiles()) {

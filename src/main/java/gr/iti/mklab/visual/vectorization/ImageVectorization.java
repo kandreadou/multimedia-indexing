@@ -1,5 +1,6 @@
 package gr.iti.mklab.visual.vectorization;
 
+import georegression.struct.point.Point2D_F64;
 import gr.iti.mklab.visual.aggregation.VladAggregatorMultipleVocabularies;
 import gr.iti.mklab.visual.dimreduction.PCA;
 import gr.iti.mklab.visual.extraction.AbstractFeatureExtractor;
@@ -67,6 +68,8 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
      * This object is used for PCA projection and whitening.
      */
     private static PCA pcaProjector;
+
+    private static CostSensitiveClassifier svm;
 
     /**
      * If set to true, debug output is displayed.
@@ -150,8 +153,10 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         // next the local features are extracted
         double[][] features = featureExtractor.extractFeatures(image);
 
+        Point2D_F64[] points = ((SURFExtractor) featureExtractor).points;
+
         //////////////////////// AREA CLASSIFIER ////////////////////////////
-        CostSensitiveClassifier svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/classifier_training/models/correctRF32trees30cost5folds.model");
+        loadClassifier();
 
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
         for (int i = 0; i < 64; i++) {
@@ -178,16 +183,16 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
             // perform prediction
             Instance inst = data.instance(i);
             double[] distribution = svm.distributionForInstance(inst);
-           if(distribution[0]>0.7 && distribution[1]<0.3){
+            if (distribution[0] > 0.7 && distribution[1] < 0.3) {
                 continue;
-            }else{
+            } else {
                 filtered.add(features[i]);
             }
             //double myValue = svm.classifyInstance(inst);
             // get the name of class value
             //String label = data.classAttribute().value((int)myValue);
             //if("IN".equals(label)){
-             //   filtered.add(features[i]);
+            //   filtered.add(features[i]);
             //}
             //int realvalue = (int) inst.classValue();
             //System.out.println("Prediction for instance " + i + " value: " + myValue + " prediction " + label);
@@ -199,7 +204,7 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
         //System.out.println("initial length "+features.length+" final length "+featuresFiltered.length);
 
         // next the features are aggregated
-        double[] vladVector = vladAggregator.aggregate(features);
+        double[] vladVector = vladAggregator.aggregate(featuresFiltered);
 
         if (vladVector.length == vectorLength) {
             // no projection is needed
@@ -236,6 +241,17 @@ public class ImageVectorization implements Callable<ImageVectorizationResult> {
      */
     public static void setPcaProjector(PCA pcaProjector) {
         ImageVectorization.pcaProjector = pcaProjector;
+    }
+
+    /**
+     * Loads the cost sensitive classifier.
+     */
+    public static void loadClassifier() {
+        try {
+            svm = (CostSensitiveClassifier) weka.core.SerializationHelper.read("/home/kandreadou/Desktop/classifier_training/models/correctRF32trees30cost5folds.model");
+        } catch (Exception ex) {
+            System.out.println("Exception when loading classifier "+ex);
+        }
     }
 
     /**

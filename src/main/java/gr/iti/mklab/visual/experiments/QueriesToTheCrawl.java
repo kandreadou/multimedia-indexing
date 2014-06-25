@@ -1,7 +1,11 @@
 package gr.iti.mklab.visual.experiments;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.socialsensor.framework.client.dao.MediaItemDAO;
 import eu.socialsensor.framework.client.dao.impl.MediaItemDAOImpl;
+import eu.socialsensor.framework.client.search.visual.JsonResultSet;
+import eu.socialsensor.framework.client.search.visual.VisualIndexHandler;
 import eu.socialsensor.framework.common.domain.MediaItem;
 import gr.iti.mklab.visual.aggregation.VladAggregatorMultipleVocabularies;
 import gr.iti.mklab.visual.datastructures.AbstractSearchStructure;
@@ -16,14 +20,20 @@ import gr.iti.mklab.visual.utilities.Result;
 import gr.iti.mklab.visual.vectorization.ImageVectorization;
 import gr.iti.mklab.visual.vectorization.ImageVectorizationResult;
 import ij.process.ImageProcessor;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +44,8 @@ public class QueriesToTheCrawl {
 
     private final static String queriesFolder = "/home/kandreadou/Pictures/queries/";
 
-    private IVFPQ ivfpq_1 = null;
+    private static IVFPQ ivfpq_1 = null;
+    //private static AbstractSearchStructure visualIndex;
     private MediaItemDAO mediaDAO = null;
 
 
@@ -42,7 +53,7 @@ public class QueriesToTheCrawl {
     private static int maxNumPixels = 768 * 512;
 
     private void init() {
-        this.mediaDAO = new MediaItemDAOImpl("127.0.0.1", "IVFPQ", "MediaItems");
+
 
         String learningFolder = "/home/kandreadou/webservice/learning_files/";
 
@@ -61,7 +72,9 @@ public class QueriesToTheCrawl {
 
         try {
 
-            int maximumNumVectors = 1000000; //one million
+            this.mediaDAO = new MediaItemDAOImpl("127.0.0.1", "Linear", "MediaItems");
+
+            /*int maximumNumVectors = 1100000; //one million
             int m2 = 64;
             int k_c = 256;
             int numCoarseCentroids = 8192;
@@ -72,7 +85,9 @@ public class QueriesToTheCrawl {
             ivfpq_1.loadCoarseQuantizer(coarseQuantizerFile2);
             ivfpq_1.loadProductQuantizer(productQuantizerFile2);
             int w = 64; // larger values will improve results/increase seach time
-            ivfpq_1.setW(w); // how many (out of 8192) lists should be visited during search.
+            ivfpq_1.setW(w); // how many (out of 8192) lists should be visited during search.*/
+            //String BDBEnvHome = learningFolder + "BDB_" + targetLengthMax;
+            //visualIndex = new Linear(targetLengthMax, 500000, false, BDBEnvHome, true, true, 0);
             //visualIndex = new Linear(targetLengthMax, 10000000, false, BDBEnvHome, false, false, 0);
             //int existingVectors = visualIndex.getLoadCounter();
             SURFExtractor extractor = new SURFExtractor();
@@ -116,11 +131,49 @@ public class QueriesToTheCrawl {
 
             try {
                 String id = r.getId();
-                System.out.println("Result from search: " + id+"##");
+                System.out.println("Result from search: " + id + "##");
                 MediaItem item = mediaDAO.getMediaItem(id);
                 if (item != null) {
+                    URL imageURL = new URL(item.getUrl());
+                    URLConnection uc = imageURL.openConnection();
+                    String type = uc.getContentType();
                     image = ImageIO.read(new URL(item.getUrl()));
-                    ImageIO.write(image, "JPG", new File(folder + "/" + id));
+                    ImageIO.write(image, type.endsWith("png") ? "PNG" : "JPG", new File(folder + "/" + id));
+                }
+
+            } catch (MalformedURLException ex) {
+                System.out.println("Malformed URL exception ");
+            } catch (IIOException ex) {
+                System.out.println("IO Exception ");
+            }
+        }
+    }
+
+    private void test(String url) throws Exception {
+        String webServiceHost = "http://160.40.51.20:8080/VisualIndexService";
+        String indexCollection =  "reveal";
+        //String webServiceHost = "http://localhost:8080/VisualIndexService";
+        //String indexCollection = "test";
+        this.mediaDAO = new MediaItemDAOImpl("160.40.51.20", "reveal", "MediaItems", "reveal", "password");
+        //this.mediaDAO = new MediaItemDAOImpl("127.0.0.1", "xxxtest", "MediaItems");
+        VisualIndexHandler vhandler = new VisualIndexHandler(webServiceHost, indexCollection);
+        double threshold = 0.9;
+        BufferedImage image1 = ImageIO.read(new URL(url));
+        ImageVectorization imvec = new ImageVectorization(url, image1, targetLengthMax, maxNumPixels);
+        ImageVectorizationResult imvr = imvec.call();
+        double[] vector = imvr.getImageVector();
+        JsonResultSet results = vhandler.getSimilarImages(vector, threshold);
+        for (JsonResultSet.JsonResult result: results.getResults()){
+            try {
+                String id = result.getId();
+                System.out.println("Result from search: " + id + "##");
+                MediaItem item = mediaDAO.getMediaItem(id);
+                if (item != null) {
+                    URL imageURL = new URL(item.getUrl());
+                    URLConnection uc = imageURL.openConnection();
+                    String type = uc.getContentType();
+                    BufferedImage image = ImageIO.read(new URL(item.getUrl()));
+                    ImageIO.write(image, type.endsWith("png") ? "PNG" : "JPG", new File("/home/kandreadou/Pictures/asdf/" + id));
                 }
 
             } catch (MalformedURLException ex) {
@@ -132,9 +185,33 @@ public class QueriesToTheCrawl {
     }
 
     public final static void main(String[] args) throws Exception {
+
+        QueriesToTheCrawl queries = new QueriesToTheCrawl();
+        queries.init();
+        queries.test("http://upload.wikimedia.org/wikipedia/commons/6/60/Edward_Snowden-2.jpg");
+    }
+
+    public final static void testqueriestothecrawl() throws Exception {
         QueriesToTheCrawl queries = new QueriesToTheCrawl();
         queries.init();
 
+        String indexUrl = "http://i2.cdn.turner.com/cnn/dam/assets/130621065203-01-brazil-0621-horizontal-gallery.jpg";
+
+        BufferedImage image = ImageIO.read(new URL(indexUrl));
+        ImageVectorization imvec = new ImageVectorization(indexUrl, image, targetLengthMax, maxNumPixels);
+        ImageVectorizationResult imvr = imvec.call();
+        double[] vector = imvr.getImageVector();
+        String id = "test14";
+        ivfpq_1.indexVector(id, vector);
+        MediaItem item = new MediaItem(new URL(indexUrl));
+        item.setId(id);
+        queries.mediaDAO.addMediaItem(item);
+
+        String url = "https://pbs.twimg.com/media/BgnFZW9CAAA_q9w.jpg";
+        queries.lookForImage("venezuella", url);
+
+
+/*
         //Sochi bathroom
         String url = "https://pbs.twimg.com/media/BfyoURwCEAAQ-vF.jpg";
         queries.lookForImage("Sochi bathroom", url);
@@ -253,6 +330,6 @@ public class QueriesToTheCrawl {
         //shark 2
         url = "https://pbs.twimg.com/media/A6ZfKQKCcAAFLrn.jpg";
         queries.lookForImage("shark 2", url);
-
+*/
     }
 }

@@ -11,6 +11,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="ij" level="project" />
     <orderEntry type="library" name="nz.ac.waikato.cms.weka:weka-dev:3.7.10" level="project" />
+    <orderEntry type="library" name="lire" level="project" />
+    <orderEntry type="library" name="smal" level="project" />
+    <orderEntry type="library" name="socialsensor-framework-client" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.georegression:georegression:0.3" level="project" />
@@ -28,9 +31,6 @@
     <orderEntry type="library" name="Maven: com.aliasi:lingpipe:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.rabbitmq:amqp-client:3.2.4" level="project" />
     <orderEntry type="library" name="Maven: gov.nih.imagej:imagej:1.47" level="project" />
-    <orderEntry type="library" name="Maven: foo.bar:SocialSensorClient:5.6.7" level="project" />
-    <orderEntry type="library" name="lire" level="project" />
-    <orderEntry type="library" name="smal" level="project" />
   </component>
 </module>
 

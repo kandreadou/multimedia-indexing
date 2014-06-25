@@ -1,7 +1,18 @@
 package gr.iti.mklab.visual.experiments;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import eu.socialsensor.framework.client.search.visual.JsonResultSet;
+import eu.socialsensor.framework.client.search.visual.VisualIndexHandler;
 import gr.iti.mklab.visual.experiments.AbstractTest;
+import gr.iti.mklab.visual.vectorization.ImageVectorization;
+import gr.iti.mklab.visual.vectorization.ImageVectorizationResult;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.*;
+
+import java.nio.ByteBuffer;
 
 /**
  * Created by katerina on 1/21/14.
@@ -12,6 +23,7 @@ public class FeatureExtrTest extends AbstractTest {
 
     /**
      * Calculate average time for visual extraction and indexing
+     *
      * @param args
      * @throws Exception
      */
@@ -46,8 +58,59 @@ public class FeatureExtrTest extends AbstractTest {
         JsonResultSet result = visualIndex.getSimilarImages(imageId, 0.5);
         System.out.println(result.toJSON());
     }*/
-
     public static void main(String[] args) throws Exception {
+        init(false);
+
+
+        double[] vector = getVector("/home/kandreadou/Pictures/streetview/", "48.8373792.282752.jpg");
+        boolean indexed = index("67fhhhhh54hhg", vector);
+        int m = 5;
+
+
+    }
+
+    public static boolean index(String id, double[] vector) {
+        HttpClient httpClient = new HttpClient();
+        String webServiceHost = "http://160.40.51.20:8080/VisualIndexService";
+        String indexCollection = "reveal";
+        byte[] vectorInBytes = new byte[8 * vector.length];
+        ByteBuffer bbuf = ByteBuffer.wrap(vectorInBytes);
+        for (double value : vector) {
+            bbuf.putDouble(value);
+        }
+
+        boolean success = false;
+        PostMethod indexMethod = null;
+        try {
+            ByteArrayPartSource source = new ByteArrayPartSource("bytes", vectorInBytes);
+            Part[] parts = {
+                    new StringPart("id", id),
+                    new FilePart("vector", source)
+            };
+            indexMethod = new PostMethod(webServiceHost + "/rest/visual/index/" + indexCollection);
+            indexMethod.setRequestEntity(new MultipartRequestEntity(parts, indexMethod.getParams()));
+
+            int code = httpClient.executeMethod(indexMethod);
+            if (code == 200) {
+                JsonParser parser = new JsonParser();
+                JsonObject o = (JsonObject) parser.parse(indexMethod.getResponseBodyAsString());
+                JsonElement e = o.get("success");
+                if (e!=null && !e.isJsonNull()) {
+                    return e.getAsBoolean();
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (indexMethod != null) {
+                indexMethod.releaseConnection();
+            }
+        }
+        return success;
+    }
+
+    /*public static void main(String[] args) throws Exception {
         init(false);
         String imageFolder = "/home/kandreadou/Desktop/";
         double[] vector = getVector(imageFolder, "damerkel.jpg");
@@ -62,7 +125,7 @@ public class FeatureExtrTest extends AbstractTest {
         System.out.println(result.toJSON());
 
         return;
-    }
+    }*/
 
 
 

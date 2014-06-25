@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class mAPevaluationNew extends AbstractTest {
 
-    private final static String imageFolder = "/home/kandreadou/datasets/holidays_queries_with_fonts/mirflickr20k/";
+    private final static String imageFolder = "/home/kandreadou/datasets/holidays_queries_with_fonts/dataset5K/";
     private static List<String> allImagesInDataset = new ArrayList<String>();
 
     private final static String queryFolder = "/home/kandreadou/datasets/holidays_queries_with_fonts/queries/";
@@ -78,16 +78,16 @@ public class mAPevaluationNew extends AbstractTest {
     }
 
     public static void experiment() throws Exception {
-        init(false);
+        init(true);
 
         File folder = new File(imageFolder);
 
-        /*for (File file : folder.listFiles()) {
+        for (File file : folder.listFiles()) {
             if (file.isFile()) {
                 String imageFilename = file.getName();
                 allImagesInDataset.add(imageFilename);
             }
-        }*/
+        }
         indexFilesInFolder(folder);
 
         File queryfolder = new File(queryFolder);
@@ -159,9 +159,10 @@ public class mAPevaluationNew extends AbstractTest {
                     double[] vector = getVector(folder.getPath() + '/', imageFilename);
                     boolean indexed = index.indexVector(imageFilename, vector);
                     long time = System.currentTimeMillis() - start;
-                    //System.out.println("indexed " + indexed + " in " + time + " milliseconds");
+                    System.out.println("indexed " + indexed + " in " + time + " milliseconds");
                 } catch (Exception ex) {
                     System.out.println("#### Error when doing ->Folder path " + folder.getPath() + " imageFilename " + imageFilename);
+                    System.out.println(ex.getMessage()+" exception "+ex);
                 }
 
             } else {
